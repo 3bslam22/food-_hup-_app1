@@ -1,0 +1,8 @@
+{
+  "name": "Food Hub",
+  "description": "A food ordering application for university restaurants supporting students and restaurant owners.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
