@@ -403,7 +403,7 @@ export default function Settings() {
 
             {/* Privacy Policy */}
             <div 
-              onClick={() => setIsPrivacyModalOpen(true)}
+              onClick={() => navigate('/privacy')}
               className="flex items-center justify-between p-4 rounded-2xl hover:bg-background transition-colors group cursor-pointer"
             >
               <div className="flex items-center gap-4">

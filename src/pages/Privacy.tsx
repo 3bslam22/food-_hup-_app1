@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Shield, Lock, Users, FileText, Mail, Info, Terminal } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Shield, Lock, Users, FileText, Mail, Info, Terminal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 
@@ -133,22 +133,24 @@ export default function Privacy() {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="bg-primary p-6 text-white text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-10"></div>
+    <div dir={isArabic ? 'rtl' : 'ltr'} className="min-h-screen bg-background pb-32 px-4 sm:px-6 max-w-2xl mx-auto pt-8">
+      {/* Header and Back Button like other pages */}
+      <div className="flex items-center gap-4 mb-8">
         <button 
           onClick={() => navigate(-1)}
-          className={`absolute top-6 ${isArabic ? 'right-6' : 'left-6'} w-10 h-10 flex items-center justify-center bg-white/20 rounded-xl hover:bg-white/30 transition-colors z-10`}
+          className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center border border-border hover:bg-border transition-colors group"
         >
-          <ArrowLeft size={20} className={isArabic ? 'rotate-180' : ''} />
+          <ArrowLeft className={`transition-transform ${isArabic ? 'rotate-180' : 'group-hover:-translate-x-1'}`} size={24} />
         </button>
-        <h1 className="text-2xl font-black mt-2 tracking-tight">
-          {isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
-        </h1>
-        <p className="text-xs opacity-70 mt-1">Last Updated: 2026</p>
+        <div>
+          <h1 className="text-2xl font-black text-text-main font-bold">
+            {isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
+          </h1>
+          <p className="text-xs text-text-muted mt-0.5">Last Updated: 2026</p>
+        </div>
       </div>
 
-      <div className="max-w-2xl mx-auto p-6 space-y-4">
+      <div className="space-y-4">
         {sections.map((section, idx) => (
           <motion.div 
             key={idx}

@@ -128,6 +128,7 @@ interface AppState {
   toggleFavorite: (itemId: string) => void;
   updateRestaurantProfile: (restaurantId: string, updates: Partial<Restaurant>) => void;
   deleteRestaurant: (restaurantId: string) => void;
+  restoreRestaurant: (restaurant: Restaurant) => void;
   addFunds: (amount: number) => void;
   updateUserProfile: (updates: Partial<User>) => void;
 }
@@ -295,10 +296,17 @@ export const useStore = create<AppState>()(
           restaurants: state.restaurants.filter(r => r.id !== restaurantId)
         }));
       },
-      addFunds: (amount) => set((state) => ({ balance: state.balance + amount }))
+      addFunds: (amount) => set((state) => ({ balance: state.balance + amount })),
+      restoreRestaurant: (restaurant) => set((state) => {
+        const exists = state.restaurants.some(r => r.id === restaurant.id);
+        if (exists) return { restaurants: state.restaurants };
+        return { 
+          restaurants: [...state.restaurants, restaurant].sort((a, b) => Number(a.id) - Number(b.id)) 
+        };
+      })
     }),
     {
-      name: 'food-hub-storage-v10', // Changed to v10 to force update and clear old state
+      name: 'food-hub-storage-v11', // Changed to v11 to force update and clear old state
     }
   )
 );

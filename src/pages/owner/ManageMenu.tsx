@@ -117,7 +117,7 @@ export default function ManageMenu() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-10 pb-10 max-w-5xl mx-auto w-full"
+      className="flex flex-col gap-10 pb-36 max-w-5xl mx-auto w-full"
     >
       <ConfirmModal
         isOpen={modalState.isOpen}
@@ -341,9 +341,9 @@ export default function ManageMenu() {
                                   </span>
                                   <button 
                                     onClick={() => updateMenuItem(restaurant.id, item.id, { isAvailable: item.isAvailable === false ? true : false })}
-                                    className={`w-10 h-5 rounded-full relative transition-all duration-300 ${item.isAvailable !== false ? 'bg-green-500' : 'bg-red-400'}`}
+                                    className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${item.isAvailable !== false ? 'bg-green-500' : 'bg-red-400'}`}
                                   >
-                                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300 ${item.isAvailable !== false ? (language === 'ar' ? 'left-1' : 'right-1') : (language === 'ar' ? 'right-5' : 'left-1')}`} />
+                                    <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300 ${item.isAvailable !== false ? 'translate-x-5' : 'translate-x-0'}`} />
                                   </button>
                                 </div>
                                 

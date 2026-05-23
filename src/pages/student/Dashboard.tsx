@@ -16,7 +16,6 @@ export default function StudentDashboard() {
   const addToCart = useStore(state => state.addToCart);
   const language = useStore(state => state.language);
   const [searchQuery, setSearchQuery] = useState('');
-  const [flyingItem, setFlyingItem] = useState<{ id: string, x: number, y: number } | null>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -50,11 +49,9 @@ export default function StudentDashboard() {
     if (!item.restaurantIsOpen || item.isAvailable === false) return;
     
     const rect = e.currentTarget.getBoundingClientRect();
-    setFlyingItem({
-      id: Math.random().toString(),
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    });
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    window.dispatchEvent(new CustomEvent('add-to-cart-animation', { detail: { x, y } }));
 
     addToCart({
       id: item.id,
@@ -63,8 +60,6 @@ export default function StudentDashboard() {
       price: item.price,
       quantity: 1
     });
-
-    setTimeout(() => setFlyingItem(null), 800);
   };
 
   const filteredRestaurants = restaurants.filter(rest => {
@@ -165,26 +160,7 @@ export default function StudentDashboard() {
         </div>
       )}
 
-      {/* Flying Animation Overlay */}
-      <AnimatePresence>
-        {flyingItem && (
-          <motion.div
-            key={flyingItem.id}
-            initial={{ scale: 1, x: flyingItem.x, y: flyingItem.y, opacity: 1 }}
-            animate={{ 
-              scale: 0.2, 
-              x: language === 'ar' ? window.innerWidth - 60 : 60, 
-              y: window.innerHeight - 60, 
-              opacity: 0.5 
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "anticipate" }}
-            className="fixed top-0 left-0 w-8 h-8 bg-primary rounded-full z-[100] flex items-center justify-center text-white pointer-events-none shadow-lg"
-          >
-            <ShoppingCart size={14} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {/* Restaurants Section */}
       <div>

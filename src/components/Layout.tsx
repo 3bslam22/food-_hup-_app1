@@ -6,6 +6,7 @@ import { Moon, Sun, MapPin, ShoppingCart, Settings, Home, Heart, ClipboardList, 
 import { cn } from '../lib/utils';
 import Chatbot from './Chatbot';
 import { motion, AnimatePresence } from 'motion/react';
+import { RESTAURANTS } from '../data/mockData';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,13 +14,24 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { t, i18n } = useTranslation();
-  const { user, theme, setTheme, language, setLanguage, cart, setUser, notifications, markNotificationAsRead, setChatbotOpen, isChatbotOpen } = useStore();
+  const { user, theme, setTheme, language, setLanguage, cart, setUser, notifications, markNotificationAsRead, setChatbotOpen, isChatbotOpen, restaurants, restoreRestaurant } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isChatbotVisible, setIsChatbotVisible] = useState(true);
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(null);
   const mainRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // If Festival Land (ID: '2') is accidentally deleted, automatically restore it
+    const hasFestival = restaurants.some(r => r.id === '2');
+    if (!hasFestival) {
+      const festivalTemplate = RESTAURANTS.find(r => r.id === '2');
+      if (festivalTemplate) {
+        restoreRestaurant(festivalTemplate as any);
+      }
+    }
+  }, [restaurants, restoreRestaurant]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +64,49 @@ export default function Layout({ children }: LayoutProps) {
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, [scrollTimeout, isChatbotOpen]);
+
+  const [flyingParticles, setFlyingParticles] = useState<{
+    id: string;
+    startX: number;
+    startY: number;
+    targetX: number;
+    targetY: number;
+  }[]>([]);
+
+  useEffect(() => {
+    const handleAddToCartAnim = (e: Event) => {
+      const customEvent = e as CustomEvent<{ x: number; y: number }>;
+      const { x, y } = customEvent.detail;
+      
+      const cartEl = document.getElementById('bottom-cart-icon');
+      // Cart is the 4th item out of 5 in English (LTR) (~70% of screen width)
+      // Cart is the 2nd item out of 5 in Arabic (RTL) (~30% of screen width)
+      let targetX = language === 'ar' ? window.innerWidth * 0.30 : window.innerWidth * 0.70;
+      let targetY = window.innerHeight - 60;
+      
+      if (cartEl) {
+        const rect = cartEl.getBoundingClientRect();
+        targetX = rect.left + rect.width / 2;
+        targetY = rect.top + rect.height / 2;
+      }
+      
+      const id = Math.random().toString();
+      setFlyingParticles(prev => [...prev, {
+        id,
+        startX: x,
+        startY: y,
+        targetX,
+        targetY
+      }]);
+      
+      setTimeout(() => {
+        setFlyingParticles(prev => prev.filter(p => p.id !== id));
+      }, 1000);
+    };
+
+    window.addEventListener('add-to-cart-animation', handleAddToCartAnim);
+    return () => window.removeEventListener('add-to-cart-animation', handleAddToCartAnim);
+  }, [language]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -256,9 +311,15 @@ export default function Layout({ children }: LayoutProps) {
                 <item.icon size={24} className={cn(isActive ? "fill-primary/20" : "", "transition-transform duration-300")} />
                 <span className="text-[10px] font-bold tracking-tight">{item.name}</span>
                 {(item as any).badge > 0 && (
-                  <span className="absolute top-1 right-3 bg-red-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-secondary">
+                  <motion.span 
+                    key={(item as any).badge}
+                    initial={{ scale: 0.6 }}
+                    animate={{ scale: [0.6, 1.4, 0.9, 1.1, 1] }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute top-1 right-3 bg-red-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-secondary"
+                  >
                     {(item as any).badge}
-                  </span>
+                  </motion.span>
                 )}
                 {isActive && (
                   <motion.div 
@@ -283,6 +344,35 @@ export default function Layout({ children }: LayoutProps) {
             <Chatbot />
           </motion.div>
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {flyingParticles.map(flying => (
+          <motion.div
+            key={flying.id}
+            initial={{ 
+              left: 0, 
+              top: 0, 
+              position: 'fixed',
+              pointerEvents: 'none',
+              zIndex: 9999,
+              direction: 'ltr'
+            }}
+            animate={{ 
+              x: [flying.startX - 20, (flying.startX + flying.targetX) / 2 - 20, flying.targetX - 20],
+              y: [flying.startY - 20, Math.min(flying.startY, flying.targetY) - 150, flying.targetY - 20],
+              scale: [1, 1.3, 0.3],
+              opacity: [1, 1, 0.9, 0],
+              rotate: [0, 180, 540],
+            }}
+            transition={{ 
+              duration: 0.9, 
+              ease: [0.25, 1, 0.5, 1] 
+            }}
+            className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-orange-500 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(255,107,0,0.5)] border-2 border-white"
+          >
+            <ShoppingCart size={16} className="text-white" />
+          </motion.div>
+        ))}
       </AnimatePresence>
     </div>
   );

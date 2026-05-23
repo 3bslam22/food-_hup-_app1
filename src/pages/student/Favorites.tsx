@@ -80,13 +80,19 @@ export default function Favorites() {
               <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
                 <div className="font-extrabold text-xl">{item.price} <span className="text-sm text-text-muted font-normal">EGP</span></div>
                 <button 
-                  onClick={() => addToCart({
-                    id: item.id,
-                    restaurantId: item.restaurantId,
-                    name: item.name,
-                    price: item.price,
-                    quantity: 1
-                  })}
+                  onClick={(e) => {
+                    addToCart({
+                      id: item.id,
+                      restaurantId: item.restaurantId,
+                      name: item.name,
+                      price: item.price,
+                      quantity: 1
+                    });
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = rect.left + rect.width / 2;
+                    const y = rect.top + rect.height / 2;
+                    window.dispatchEvent(new CustomEvent('add-to-cart-animation', { detail: { x, y } }));
+                  }}
                   className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
                 >
                   <Plus size={20} />

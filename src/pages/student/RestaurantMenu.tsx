@@ -65,7 +65,7 @@ export default function RestaurantMenu() {
     rateMenuItem(restaurant.id, itemId, rating);
   };
 
-  const handleAddToCart = (item: any) => {
+  const handleAddToCart = (item: any, e?: React.MouseEvent) => {
     addToCart({
       id: item.id,
       restaurantId: restaurant.id,
@@ -73,6 +73,13 @@ export default function RestaurantMenu() {
       price: item.price,
       quantity: 1
     });
+
+    if (e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      window.dispatchEvent(new CustomEvent('add-to-cart-animation', { detail: { x, y } }));
+    }
   };
 
   return (
@@ -173,7 +180,7 @@ export default function RestaurantMenu() {
                   </div>
                   
                   <button 
-                    onClick={() => restaurant.isOpen && handleAddToCart({...offer, name: offer.title, isOffer: true})}
+                    onClick={(e) => restaurant.isOpen && handleAddToCart({...offer, name: offer.title, isOffer: true}, e)}
                     disabled={!restaurant.isOpen}
                     className={cn(
                       "flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all shadow-md",
@@ -283,7 +290,7 @@ export default function RestaurantMenu() {
                               )}
                             </div>
                             <button 
-                              onClick={() => restaurant.isOpen && item.isAvailable !== false && handleAddToCart(item)}
+                              onClick={(e) => restaurant.isOpen && item.isAvailable !== false && handleAddToCart(item, e)}
                               disabled={!restaurant.isOpen || item.isAvailable === false}
                               className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${restaurant.isOpen && item.isAvailable !== false ? 'bg-primary/10 text-primary hover:bg-primary hover:text-white group-hover:scale-105' : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'}`}
                             >

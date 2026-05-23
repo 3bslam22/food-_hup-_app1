@@ -381,7 +381,7 @@ export default function Account() {
 
           {/* Privacy Policy */}
           <div 
-            onClick={() => setIsPrivacyModalOpen(true)}
+            onClick={() => navigate('/privacy')}
             className="flex items-center justify-between p-3 sm:p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group cursor-pointer"
           >
             <div className="flex items-center gap-3 sm:gap-4">

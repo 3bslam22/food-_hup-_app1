@@ -30,7 +30,7 @@ export default function OwnerDashboard() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-8 pb-10"
+      className="flex flex-col gap-8 pb-36"
     >
       <div className="bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex justify-between items-center">
         <div>
